@@ -52,7 +52,7 @@ steps:
 
 - script: ansible-galaxy collection install community.general
 
-- name: Create an ISO file
+- task: Create an ISO file
   community.general.iso_create:
     src_files:
       - $(Pipeline.Workspace)/Artifacts
