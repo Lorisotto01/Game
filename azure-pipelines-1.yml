@@ -46,6 +46,15 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Pipeline.Workspace)'
+    targetPath: '$(Pipeline.Workspace)/Artifacts'
     artifact: '$(artifactName)'
     publishLocation: 'pipeline'
+
+- script: ansible-galaxy collection install community.general
+
+- name: Create an ISO file
+  community.general.iso_create:
+    src_files:
+      - $(Pipeline.Workspace)/Artifacts
+    dest_iso: $(Pipeline.Workspace)/ISO/test.iso
+    interchange_level: 3
