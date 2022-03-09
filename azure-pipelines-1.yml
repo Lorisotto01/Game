@@ -50,11 +50,21 @@ steps:
     artifact: '$(artifactName)'
     publishLocation: 'pipeline'
 
-- script: ansible-galaxy collection install community.general
+# - script: ansible-galaxy collection install community.general
 
-- task: Create an ISO file
-  community.general.iso_create:
-    src_files:
-      - $(Pipeline.Workspace)/Artifacts
-    dest_iso: $(Pipeline.Workspace)/ISO/test.iso
-    interchange_level: 3
+# - task: Create an ISO file
+#   community.general.iso_create:
+#     src_files:
+#       - $(Pipeline.Workspace)/Artifacts
+#     dest_iso: $(Pipeline.Workspace)/ISO/test.iso
+#     interchange_level: 3
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'ImageBuilder'
+    subscriptionId: '3a36346f-08ec-4d4a-9f19-60bd98c217c4'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: '$(ResourceGroup)'
+    location: '$(Location)'
+    templateLocation: 'Linked artifact'
+    deploymentMode: 'Incremental'
