@@ -1,16 +1,19 @@
 parameters:
   assetsDirectory: 'Assets'
   fileExtension: 'wav'
-  count: 2
+  targetCount: 2
+
+variables:
+  - name: actualCount
+    value: 2
 
 jobs:
   steps:
-  - script: 'ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l > ${{fileExtention}}Count.txt'
+  - script: '${{actualCount}} = int (ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l)'
     displayName: '${{fileExtension}} assets count'
 
-  - script: echo "${{fileExtention}} assets check - Failed" > assetCheck.txt
-    rules:
-      - if: 'cat ${{fileExtention}}Count.txt === "${{count}}"'
-        else: echo "${{fileExtention}} assets check - Succeded" > assetCheck.txt #check syntax
-        when: always
-        when: on_success
+  - script: echo "Asset   result" >> assetsCheck.txt
+  - ${{ if eq(${{actualCount}}, ${{targetCount}}) }}:
+    - script: echo "${{fileExtention}}    Succeded"
+  - ${{ else }}:
+    - script: echo "${{fileExtention}}    Failed"

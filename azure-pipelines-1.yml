@@ -56,6 +56,7 @@ stages:
   #     count: 5
 
     - script: mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+
     - bash: Oscdimg -dn $(Build.SourcesDirectory) $(Build.ArtifactStagingDirectory)/$(artifactName)
 
   - stage: PublishArtifact #https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml
@@ -69,7 +70,9 @@ stages:
     - task: PublishBuildArtifacts@1 # recommendded for faster performance
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: drop
+        artifactName: $(artifactName)
+
+    #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
 
 
 # Download and debug
