@@ -1,15 +1,16 @@
 parameters:
   assetsDirectory: 'Assets'
   fileExtension: 'wav'
-  count: '2'
+  count: 2
 
 jobs:
   steps:
   - script: 'ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l > ${{fileExtention}}Count.txt'
     displayName: '${{fileExtension}} assets count'
 
-  - script: mail -s "Project assets check" lori.sottocorno@libero.it <<< 'Failed'
+  - script: echo "${{fileExtention}} assets check - Failed" > assetCheck.txt
     rules:
       - if: 'cat ${{fileExtention}}Count.txt === "${{count}}"'
+        else: echo "${{fileExtention}} assets check - Succeded" > assetCheck.txt #check syntax
         when: always
         when: on_success

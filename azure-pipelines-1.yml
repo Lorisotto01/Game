@@ -6,72 +6,72 @@
 trigger:
 - windows
 
-pool:
-  vmImage: 'windows-latest'
+name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
+
 
 variables:
+  AgentImage: "windows-latest"
+  system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   artifactName: 'Simple3D'
 
 stages:
-  - stage: preBuild
-    steps:
-    - task: NuGetToolInstaller@1
+- stage: 'Build_Stage' #Stage name cannot have spaces
+  displayName: 'Build'
 
-    - task: NuGetCommand@2
-      inputs:
-        restoreSolution: '$(solution)'
+  jobs:
+  - job: 'BuildJob' #Job name cannot have spaces
+    displayName: 'Application Build'
 
-  - stage: BuildAndTest
+    pool:
+      vmImage: $(AgentImage)
+
+  - stage: 'BuildAndTest'
     steps:
-    - task: VSBuild@1
+    - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
+      displayName: 'VS Build & Package restore'
       inputs:
         solution: '$(solution)'
         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
     - task: VSTest@2
+      displayName: 'VS Test'
       inputs:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
+  - stage: 'Consitancy Check'
+    steps:
   # - template: templates/assetsControl.yml
   #   parameters:
   #     fileExtention: 'wav'
-  #     count: '2'
+  #     count: 2
 
   # - template: templates/assetsControl.yml
   #   parameters:
   #     fileExtention: 'dds'
-  #     count: '5'
+  #     count: 5
 
-  - stage: Deploy
-    steps:
-    - task: AzureResourceManagerTemplateDeployment@3
-      inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: 'ImageBuilder'
-        subscriptionId: '3a36346f-08ec-4d4a-9f19-60bd98c217c4'
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: '$(ResourceGroup)'
-        location: '$(Location)'
-        templateLocation: 'Linked artifact'
-        deploymentMode: 'Incremental'
+    - script: mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+    - bash: Oscdimg -dn $(Build.SourcesDirectory) $(Build.ArtifactStagingDirectory)/$(artifactName)
 
-  - stage: Publish #https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml
-# recommendded for faster performance
+  - stage: PublishArtifact #https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml
     steps:
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
-        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)' # da revedere gli estensioni
+        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)' # da rivedere estensioni
         targetFolder: '$(Build.ArtifactStagingDirectory)'
-    - task: PublishBuildArtifacts@1
+
+    - task: PublishBuildArtifacts@1 # recommendded for faster performance
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: drop
+
+
 # Download and debug
     # - task: DownloadBuildArtifacts@0
     #   inputs:
@@ -79,5 +79,20 @@ stages:
     #     downloadType: 'single'
     #     artifactName: 'drop'
     #     downloadPath: '$(System.ArtifactsDirectory)'
+
+# imageBuild alternative
+  # - stage: Deploy
+  #   steps:
+  #   - task: AzureResourceManagerTemplateDeployment@3
+  #     inputs:
+  #       deploymentScope: 'Resource Group'
+  #       azureResourceManagerConnection: 'ImageBuilder'
+  #       subscriptionId: '3a36346f-08ec-4d4a-9f19-60bd98c217c4'
+  #       action: 'Create Or Update Resource Group'
+  #       resourceGroupName: '$(ResourceGroup)'
+  #       location: '$(Location)'
+  #       templateLocation: 'Linked artifact'
+  #       deploymentMode: 'Incremental'
+
 
 
