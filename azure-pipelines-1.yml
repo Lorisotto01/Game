@@ -16,6 +16,9 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   artifactName: 'Simple3D'
+  # extensions:
+  #   - {name: "wav", count: 2}
+  #   - {name: "dds", count: 5}
 
 stages:
 - stage: 'Build_Stage' #Stage name cannot have spaces
@@ -55,17 +58,25 @@ stages:
   #     fileExtention: 'dds'
   #     count: 5
 
-    - script: mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+    # - script: mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
 
-    - bash: Oscdimg -dn $(Build.SourcesDirectory) $(Build.ArtifactStagingDirectory)/$(artifactName)
+    #iso creation
+    - bash:
+        Oscdimg -dn $(Build.SourcesDirectory) $(artifactName)
+    #assign size to env variable
+    - bash:
+        isoSize=$(ls -l $(Build.SourcesDirectory)/*.iso | awk '{print $5}')
+    #compare size
+    - bash:
+        if [ (!!int $isoSize / 1024) > 4780 ]; then #to complete/check
 
-  - stage: PublishArtifact #https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml
-    steps:
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)' # da rivedere estensioni
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
+  # - stage: PublishArtifact #https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml
+  #   steps:
+  #   - task: CopyFiles@2
+  #     inputs:
+  #       sourceFolder: '$(Build.SourcesDirectory)'
+  #       contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)' # da rivedere estensioni
+  #       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1 # recommendded for faster performance
       inputs:
@@ -74,6 +85,16 @@ stages:
 
     #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
 
+    - task: SteamPublish@3
+          name: "Simple3DGameDX"
+            appid: 202930
+            disk_size_mb: "640"
+          targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
+          inputs:
+            username: $USER
+            password: $PASS
+
+    - task:
 
 # Download and debug
     # - task: DownloadBuildArtifacts@0
