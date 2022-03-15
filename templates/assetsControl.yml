@@ -6,8 +6,10 @@ parameters:
 steps:
 - bash: 'actualCount =$(ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l)'
   # displayName: '${{fileExtension}} assets count'
-- script: echo "Asset   result" >> assetsCheck.txt
-- ${{ if eq(${{actualCount}}, ${{targetCount}}) }}:
-  - script: echo "${{fileExtention}}    Succeded" >> assetsCheck.txt
-- ${{ else }}:
-  - script: echo "${{fileExtention}}    Failed" >> assetsCheck.txt
+- bash: echo "Asset   result" >> assetsCheck.txt
+- bash: |
+    if eq($actualCount, ${{targetCount}}); then
+      echo "${{fileExtention}}    Succeded" >> assetsCheck.txt
+    else
+      echo "${{fileExtention}}    Failed" >> assetsCheck.txt
+    fi
