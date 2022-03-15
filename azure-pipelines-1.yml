@@ -21,18 +21,14 @@ variables:
   #   - {name: "wav", count: 2}
   #   - {name: "dds", count: 5}
 
-stages:
-- stage: 'Build_Stage' #Stage name cannot have spaces
-  displayName: 'Build'
+jobs:
+# - stage: 'Build_Stage' #Stage name cannot have spaces
+#   displayName: 'Build'
 
-  jobs:
-  - job: 'BuildJob' #Job name cannot have spaces
+  pool:
+    vmImage: $(AgentImage)
+  - job: 'BuildAndTest' #Job name cannot have spaces
     displayName: 'Application Build'
-
-    pool:
-      vmImage: $(AgentImage)
-
-  - stage: 'BuildAndTest'
     steps:
     - script: #scarica e instala directX
     - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
@@ -48,7 +44,7 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-  - stage: 'Consitancy Check'
+  - job: 'Consitancy Check'
     variables:
       DVDsize: 4780
     steps:
@@ -75,7 +71,7 @@ stages:
       displayName: 'iso creation'
       condition: and(succeeded(), eq(variables.imageSize, 0))
 
-  - stage: 'Publish'
+  - job: 'Publish'
     steps:
     - task: PublishBuildArtifacts@1 # recommendded for faster performance
       inputs:
