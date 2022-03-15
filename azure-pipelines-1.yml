@@ -45,6 +45,7 @@ jobs:
 
 - job: 'ConsistancyCheck'
   displayName: 'Application Consistancy Check'
+  dependsOn: 'BuildAndTest'
   variables:
     DVDsize: 4780
 

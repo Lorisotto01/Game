@@ -4,8 +4,8 @@ parameters:
   targetCount: 2
 
 steps:
-- bash: 'actualCount =$(ls $(assetsDirectory)/*.$(fileExtension) | wc -l)'
-  # displayName: '${{fileExtension}} assets count'
+- bash: 'actualCount =$(ls $ASSETSDIRECTORY/*.$(fileExtension) | wc -l)'
+  displayName: '${{fileExtension}} assets count'
 - bash: echo "Asset   result" >> assetsCheck.txt
 - bash: |
     if eq($actualCount, $(targetCount)); then
