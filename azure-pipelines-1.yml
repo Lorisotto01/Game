@@ -65,8 +65,10 @@ jobs:
       echo "##vso[task.setvariable variable=imageSize]$imagesize"
     displayName: 'iso source files size check'
   #iso creation with condition
+  # - bash: |
+  #     OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
   - bash: |
-      OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
+      mkisofs -o $(Build.SourcesDirectory)/$(artifactName).iso -J -R -l $(Build.SourcesDirectory)
     displayName: 'iso creation'
     condition: and(succeeded(), eq(variables.imageSize, 0))
 
@@ -76,7 +78,7 @@ jobs:
   - task: PublishBuildArtifacts@1 # recommendded for faster performance
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: $(artifactName)
+      artifactName: $(artifactName).iso
 
 #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
   # - task: SteamPublish@3
