@@ -83,17 +83,17 @@ stages:
         artifactName: $(artifactName)
 
 #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
-    - task: SteamPublish@3
-      displayName: "Steam publish"
-        name: "Simple3DGameDX"
-          appid: 202930
-          disk_size_mb: $(DVDsize)
-        targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
-        inputs:
-          username: $USER
-          password: $PASS
+    # - task: SteamPublish@3
+    #   displayName: "Steam publish"
+    #     name: "Simple3DGameDX"
+    #       appid: 202930
+    #       disk_size_mb: $(DVDsize)
+    #     targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
+    #     inputs:
+    #       username: $USER
+    #       password: $PASS
 
-    - task:
+    # - task:
 # Download and debug
     # - task: DownloadBuildArtifacts@0
     #   inputs:
