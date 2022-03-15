@@ -4,12 +4,12 @@ parameters:
   targetCount: 2
 
 steps:
-- bash: 'actualCount=$(ls $ASSETSDIRECTORY/*.$$FILEEXTENSION | wc -l)'
+- bash: 'actualCount=$(ls $ASSETSDIRECTORY/*.$FILEEXTENSION | wc -l)'
   displayName: '$FILEEXTENSION assets count'
 - bash: echo "Asset   result" >> assetsCheck.txt
 - bash: |
     if eq($actualCount, $TARGETCOUNT); then
-      echo "$FILEEXTENSION    Succeded" >> assetsCheck.txt
+      echo $FILEEXTENSION "    Succeded" >> assetsCheck.txt
     else
-      echo "$FILEEXTENSION    Failed" >> assetsCheck.txt
+      echo $FILEEXTENSION "    Failed" >> assetsCheck.txt
     fi

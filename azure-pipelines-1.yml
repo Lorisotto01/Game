@@ -82,6 +82,7 @@ jobs:
 
 - job: 'Publish'
   displayName: 'Publish Build Artifacts'
+  dependsOn: 'ConsistancyCheck'
   steps:
   - task: PublishBuildArtifacts@1 # recommendded for faster performance
     inputs:
