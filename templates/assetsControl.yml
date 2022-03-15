@@ -9,11 +9,11 @@ variables:
 
 jobs:
   steps:
-  - script: '${{actualCount}} = int (ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l)'
+  - script: '${{actualCount}} = (ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l)'
     displayName: '${{fileExtension}} assets count'
 
   - script: echo "Asset   result" >> assetsCheck.txt
   - ${{ if eq(${{actualCount}}, ${{targetCount}}) }}:
-    - script: echo "${{fileExtention}}    Succeded"
+    - script: echo "${{fileExtention}}    Succeded" >> assetsCheck.txt
   - ${{ else }}:
-    - script: echo "${{fileExtention}}    Failed"
+    - script: echo "${{fileExtention}}    Failed" >> assetsCheck.txt

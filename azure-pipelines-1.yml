@@ -6,10 +6,11 @@
 trigger:
 - windows
 
-name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
-
+# name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
 
 variables:
+# script to export all variables to the shell env
+# . <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' app.yaml)
   AgentImage: "windows-latest"
   system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
   solution: '**/*.sln'
@@ -33,6 +34,7 @@ stages:
 
   - stage: 'BuildAndTest'
     steps:
+    - script: #scarica e instala directX
     - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
       displayName: 'VS Build & Package restore'
       inputs:
@@ -47,6 +49,8 @@ stages:
         configuration: '$(buildConfiguration)'
 
   - stage: 'Consitancy Check'
+    variables:
+      DVDsize: 4780
     steps:
   # - template: templates/assetsControl.yml
   #   parameters:
@@ -60,42 +64,36 @@ stages:
 
     # - script: mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
 
-    #iso creation
-    - bash:
+    #set size flag for the full source code
+    - bash: |
+        imagesize=$(du -c | tail -1 | awk '{x = $1 / 1024; if (x > $(DVDsize)) {print -1} else {print 0}}')
+        echo "##vso[task.setvariable variable=imageSize]$imagesize"
+      displayName: 'iso source files size check'
+    #iso creation with condition
+    - bash: |
         Oscdimg -dn $(Build.SourcesDirectory) $(artifactName)
-    #assign size to env variable
-    - bash:
-        isoSize=$(ls -l $(Build.SourcesDirectory)/*.iso | awk '{print $5}')
-    #compare size
-    - bash:
-        if [ (!!int $isoSize / 1024) > 4780 ]; then #to complete/check
+      displayName: 'iso creation'
+      condition: and(succeeded(), eq(variables.imageSize, 0))
 
-  # - stage: PublishArtifact #https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml
-  #   steps:
-  #   - task: CopyFiles@2
-  #     inputs:
-  #       sourceFolder: '$(Build.SourcesDirectory)'
-  #       contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)' # da rivedere estensioni
-  #       targetFolder: '$(Build.ArtifactStagingDirectory)'
-
+  - stage: 'Publish'
+    steps:
     - task: PublishBuildArtifacts@1 # recommendded for faster performance
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: $(artifactName)
 
-    #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
-
+#https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
     - task: SteamPublish@3
-          name: "Simple3DGameDX"
-            appid: 202930
-            disk_size_mb: "640"
-          targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
-          inputs:
-            username: $USER
-            password: $PASS
+      displayName: "Steam publish"
+        name: "Simple3DGameDX"
+          appid: 202930
+          disk_size_mb: $(DVDsize)
+        targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
+        inputs:
+          username: $USER
+          password: $PASS
 
     - task:
-
 # Download and debug
     # - task: DownloadBuildArtifacts@0
     #   inputs:
