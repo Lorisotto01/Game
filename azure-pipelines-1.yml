@@ -93,16 +93,16 @@ jobs:
   #     imagesize=$(du $(Build.ArtifactStagingDirectory)/$(artifactName).zip| awk '{print $1}')
   #     echo "##vso[task.setvariable variable=artifactSize]$imagesize"
 
-  - task: SteamPublish@3
-    displayName: 'Publish Steam'
-    name: "Simple3DGameDX"
-      appid: 202930
-      disk_size_mb: '$(artifactSize)'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/$(artifactName).zip'
-    inputs:
-      username: $USER
-      password: $PASS
-      description: '**/description.json'
+  # - task: SteamPublish@3
+  #   displayName: 'Publish Steam'
+  #   name: "Simple3DGameDX"
+  #     appid: 202930
+  #     disk_size_mb: '$(artifactSize)'
+  #   targetFolder: '$(Build.ArtifactStagingDirectory)/$(artifactName).zip'
+  #   inputs:
+  #     username: $USER
+  #     password: $PASS
+  #     description: '**/description.json'
 
 
 
