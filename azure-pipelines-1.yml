@@ -17,6 +17,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   artifactName: 'Simple3D'
+  artifactSize: 4780
   # extensions:
   #   - {name: "wav", count: 2}
   #   - {name: "dds", count: 5}
@@ -46,34 +47,40 @@ jobs:
   displayName: 'Application Consistancy Check'
   variables:
     DVDsize: 4780
+
   steps:
-# - template: templates/assetsControl.yml
-#   parameters:
-#     fileExtention: 'wav'
-#     count: 2
+  - template: templates/assetsControl.yml
+    parameters:
+      fileExtention: 'wav'
+      count: 2
 
-# - template: templates/assetsControl.yml
-#   parameters:
-#     fileExtention: 'dds'
-#     count: 5
+  - template: templates/assetsControl.yml
+    parameters:
+      fileExtention: 'dds'
+      count: 5
 
-  # - script: mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+  - bash: |
+      if grep "Failed" assetsCheck.txt
+      then mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+      fi
+    displayName: 'send mail with assets check result'
 
   #set size flag for the full source code
   - bash: |
       imagesize=$(du -c | tail -1 | awk '{x = $1 / 1024; if (x > $(DVDsize)) {print -1} else {print 0}}')
-      echo "##vso[task.setvariable variable=imageSize]$imagesize"
+      echo "##vso[task.setvariable variable=artifactSize]$imagesize"
     displayName: 'iso source files size check'
   #iso creation with condition
   # - bash: |
-  #     OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
+      # mkisofs -o $(Build.SourcesDirectory)/$(artifactName).iso -J -R -l $(Build.SourcesDirectory)
   - bash: |
-      mkisofs -o $(Build.SourcesDirectory)/$(artifactName).iso -J -R -l $(Build.SourcesDirectory)
+      curl.exe -o oscdimg.zip http://www.sevenforums.com/attachments/general-discussion/32382d1256189124-make-bootable-iso-student-d-l-oscdimg.zip
+      OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
     displayName: 'iso creation'
     condition: and(succeeded(), eq(variables.imageSize, 0))
 
 - job: 'Publish'
-  displayName: 'Application Publish'
+  displayName: 'Publish Build Artifacts'
   steps:
   - task: PublishBuildArtifacts@1 # recommendded for faster performance
     inputs:
@@ -81,38 +88,21 @@ jobs:
       artifactName: $(artifactName).iso
 
 #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
-  # - task: SteamPublish@3
-  #   displayName: "Steam publish"
-  #     name: "Simple3DGameDX"
-  #       appid: 202930
-  #       disk_size_mb: $(DVDsize)
-  #     targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
-  #     inputs:
-  #       username: $USER
-  #       password: $PASS
 
-  # - task:
-# Download and debug
-  # - task: DownloadBuildArtifacts@0
-  #   inputs:
-  #     buildType: 'current'
-  #     downloadType: 'single'
-  #     artifactName: 'drop'
-  #     downloadPath: '$(System.ArtifactsDirectory)'
+  # - bash: |
+  #     imagesize=$(du $(Build.ArtifactStagingDirectory)/$(artifactName).zip| awk '{print $1}')
+  #     echo "##vso[task.setvariable variable=artifactSize]$imagesize"
 
-# imageBuild alternative
-# - stage: Deploy
-#   steps:
-#   - task: AzureResourceManagerTemplateDeployment@3
-#     inputs:
-#       deploymentScope: 'Resource Group'
-#       azureResourceManagerConnection: 'ImageBuilder'
-#       subscriptionId: '3a36346f-08ec-4d4a-9f19-60bd98c217c4'
-#       action: 'Create Or Update Resource Group'
-#       resourceGroupName: '$(ResourceGroup)'
-#       location: '$(Location)'
-#       templateLocation: 'Linked artifact'
-#       deploymentMode: 'Incremental'
+  - task: SteamPublish@3
+    displayName: 'Publish Steam'
+      name: "Simple3DGameDX"
+        appid: 202930
+        disk_size_mb: '$(artifactSize)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/$(artifactName).zip'
+      inputs:
+        username: $USER
+        password: $PASS
+        description: '**/description.json'
 
 
 

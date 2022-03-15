@@ -3,15 +3,10 @@ parameters:
   fileExtension: 'wav'
   targetCount: 2
 
-variables:
-  - name: actualCount
-    value: 2
-
 jobs:
   steps:
-  - script: '${{actualCount}} = (ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l)'
-    displayName: '${{fileExtension}} assets count'
-
+  - bash: 'actualCount =$(ls ${{assetsDirectory}}/*.${{fileExtension}} | wc -l)'
+    # displayName: '${{fileExtension}} assets count'
   - script: echo "Asset   result" >> assetsCheck.txt
   - ${{ if eq(${{actualCount}}, ${{targetCount}}) }}:
     - script: echo "${{fileExtention}}    Succeded" >> assetsCheck.txt
