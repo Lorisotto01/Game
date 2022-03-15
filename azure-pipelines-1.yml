@@ -21,8 +21,8 @@ variables:
   #   - {name: "wav", count: 2}
   #   - {name: "dds", count: 5}
 
-  pool:
-    vmImage: $(AgentImage)
+pool:
+  vmImage: $(AgentImage)
 
 jobs:
 - job: 'BuildAndTest' #Job name cannot have spaces
