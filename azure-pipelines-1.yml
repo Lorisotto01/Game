@@ -17,6 +17,7 @@ variables:
   artifactName: 'Simple3D'
   assets: 'Assets'
   jsonData: 'JSON'
+  imageSize: 4780
   artifactSize: 4780
   videoRes: '3840x2160'
 
@@ -118,7 +119,7 @@ jobs:
       curl.exe -o oscdimg.zip http://www.sevenforums.com/attachments/general-discussion/32382d1256189124-make-bootable-iso-student-d-l-oscdimg.zip
       OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
     displayName: 'iso creation'
-    condition: and(succeeded(), eq($(imageSize), 0))
+    condition: and(succeeded(), eq(variables.imageSize, 0))
 
 - job: 'Publish'
   displayName: 'Publish'
@@ -171,7 +172,7 @@ jobs:
           #     privacy: private
           #   secrets_path: $(jsonData)/client_secrets.json
           #   credentials_path:  $(jsonData)/credentials.json
-          #   condition: and(succeeded(), eq($(videoRes),  3840x2160)) # controllo per vedere se la risoluzione Ã¨ quella desiderata
+          #   condition: and(succeeded(), eq(variables.videoRes),  3840x2160))
 
 
 
