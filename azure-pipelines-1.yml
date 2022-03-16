@@ -100,8 +100,8 @@ jobs:
 
 
   - bash: |
-      if (grep "Failed" assetsCheck.txt ||
-      then mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+      if [ grep "Failed" assetsCheck.txt ]; then
+        mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
       fi
     displayName: 'send mail with assets check results'
 
