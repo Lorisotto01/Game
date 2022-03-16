@@ -11,7 +11,7 @@ steps:
   displayName: '${{ parameters.fileExtension }} count'
 - bash: |
     echo "Asset   result" >> assetsCheck.txt
-    if eq(${{ parameters.actualCount }}, ${{ parameters.targetCount }}); then
+    if -eq(${{ parameters.actualCount }}, ${{ parameters.targetCount }}); then
       echo ${{ parameters.fileExtention }} "    Succeded" >> assetsCheck.txt
     else
       echo ${{ parameters.fileExtention }} "    Failed" >> assetsCheck.txt
