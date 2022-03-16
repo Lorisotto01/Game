@@ -145,14 +145,14 @@ jobs:
 
   - task: SteamPublish@3
     displayName: 'Steam Publish'
-      name: "Simple3DGameDX"
-        appid: 202930
-        disk_size_mb: '$(zipSize)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
-      inputs:
-        username: $USER
-        password: $PASS
-        description: '$(jsonData)/description.json'
+    name: "Simple3DGameDX"
+      appid: 202930
+      disk_size_mb: '$(zipSize)'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
+    inputs:
+      username: $USER
+      password: $PASS
+      description: '$(jsonData)/description.json'
     # group: 1
 
   # https://stackoverflow.com/questions/684015/how-can-i-get-the-resolution-width-and-height-for-a-video-file-from-a-linux-co
