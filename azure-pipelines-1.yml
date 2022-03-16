@@ -27,7 +27,7 @@ pool:
   - msbuild
   - visualstudio
   # - oscdimg
-  - DirectX
+  # - DirectX
 
 jobs:
 - job: 'BuildAndTest' #Job name cannot have spaces
