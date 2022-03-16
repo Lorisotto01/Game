@@ -40,15 +40,15 @@ jobs:
 - job: 'BuildAndTest' #Job name cannot have spaces
   displayName: 'Build and Test'
   steps:
-  - task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
+  # - task: NuGetCommand@2
+  # inputs:
+  #   command: 'restore'
+  #   restoreSolution: '**/*.sln'
+  #   feedsToUse: 'select'
 
-  - script: dotnet add package Microsoft.DXSDK.D3DX --version 9.29.952.8
+  - bash: dotnet add package Microsoft.DXSDK.D3DX --version 9.29.952.8
     displayName: 'get directX'
-  - script: dotnet add package DiscUtils.Iso9660 --version 0.16.13
+  - bash: dotnet add package DiscUtils.Iso9660 --version 0.16.13
     displayName: 'get iso creator'
 
   - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
