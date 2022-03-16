@@ -10,7 +10,7 @@ steps:
   displayName: '${{parameters.fileExtension}} assets count'
 - bash: echo "Asset   result" >> assetsCheck.txt
 - bash: |
-    if eq($(actualCount), ${{ parameters.targetCount }}); then
+    if eq(${{ actualCount }}, ${{ parameters.targetCount }}); then
       echo ${{ parameters.fileExtention }} "    Succeded" >> assetsCheck.txt
     else
       echo ${{ parameters.fileExtention }} "    Failed" >> assetsCheck.txt
