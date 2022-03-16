@@ -82,8 +82,12 @@ jobs:
       count: 1
 
   - bash: |
-      MediaInfo::Open("Cheesy.mp4")
-      MediaInfo::Get("**StreamKind**, **StreamNumber**, **Parameter**, **InfoKind**")
+      videoRes=$(mediainfo --Inform="Video;%DisplayAspectRatio%" Assets/Cheesy.mp4)
+      if ($videoRes != $VIDEORES); then
+        echo "mp4Res    Failed" >> assetCheck.txt
+      else
+        echo "mp4Res    Succeded" >> assetCheck.txt
+      fi
 
   - bash: |
       videoRes=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $(Build.SourcesDirectory)/$(Assets)/*)
