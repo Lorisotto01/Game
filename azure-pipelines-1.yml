@@ -146,8 +146,8 @@ jobs:
   - task: SteamPublish@3
     displayName: 'Steam Publish'
     name: "Simple3DGameDX"
-      appid: 202930
-      disk_size_mb: '$(zipSize)'
+    appid: 202930
+    disk_size_mb: '$(zipSize)'
     targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
     inputs:
       username: $USER
