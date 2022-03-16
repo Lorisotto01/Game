@@ -2,7 +2,6 @@ parameters:
   assetsDirectory: 'Assets'
   fileExtension: 'wav'
   targetCount: 2
-variables:
   actualCount: 0
 
 steps:
