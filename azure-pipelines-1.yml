@@ -38,8 +38,8 @@ pool:
 # https://docs.microsoft.com/en-us/windows/win32/dxtecharts/directx-setup-for-game-developers
 
 jobs:
-- job: 'BuildAndTest' #Job name cannot have spaces
-  displayName: 'Build and Test'
+- job: 'Build' #Job name cannot have spaces
+  displayName: 'Build'
   steps:
   - task: NuGetCommand@2
     inputs:
@@ -52,11 +52,6 @@ jobs:
     inputs:
       solution: '$(solution)'
       msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-  - task: VSTest@2
-    displayName: 'VS Test'
-    inputs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
