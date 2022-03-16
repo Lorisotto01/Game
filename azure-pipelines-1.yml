@@ -43,11 +43,8 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
-      restoreSolution: '**/*.sln'
+      restoreSolution: '**/*.config'
       feedsToUse: 'select'
-
-  - bash: nuget install
-    displayName: 'get packages'
 
   - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
     displayName: 'VS Build & Package restore'
