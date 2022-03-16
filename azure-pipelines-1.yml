@@ -88,6 +88,7 @@ jobs:
       else
         echo "mp4Res    Succeded" >> assetCheck.txt
       fi
+    displayName: 'media info resolution'
 
   - bash: |
       videoRes=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $(Build.SourcesDirectory)/$(Assets)/*)
@@ -96,7 +97,7 @@ jobs:
       else
         echo "mp4Res    Succeded" >> assetCheck.txt
       fi
-    displayName: 'trailer resolution check'
+    displayName: 'ffprobe resolution check'
 
 
   - bash: |
@@ -117,7 +118,7 @@ jobs:
       curl.exe -o oscdimg.zip http://www.sevenforums.com/attachments/general-discussion/32382d1256189124-make-bootable-iso-student-d-l-oscdimg.zip
       OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
     displayName: 'iso creation'
-    condition: and(succeeded(), eq(variables.imageSize, 0))
+    condition: and(succeeded(), eq($(imageSize), 0))
 
 - job: 'Publish'
   displayName: 'Publish'
