@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- windows
+- main
 
 # name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
 
@@ -84,7 +84,7 @@ jobs:
   - bash: |
       MediaInfo::Open("Assets/Cheesy.mp4")
       MediaInfo::Get("**StreamKind**, **StreamNumber**, **Parameter**, **InfoKind**")
-  
+
   - bash: |
       videoRes=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $(Build.SourcesDirectory)/$(Assets)/*)
       if ($videoRes != $VIDEORES); then
