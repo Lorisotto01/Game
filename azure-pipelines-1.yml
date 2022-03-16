@@ -47,7 +47,7 @@ jobs:
       feedsToUse: 'select'
 
   - bash: nuget install
-    displayName: 'get utilities'
+    displayName: 'get packages'
 
   - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
     displayName: 'VS Build & Package restore'
