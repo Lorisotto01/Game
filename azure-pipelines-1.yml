@@ -43,11 +43,11 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
-      restoreSolution: '**/*.config'
+      restoreSolution: '$(solution)'
       feedsToUse: 'select'
 
   - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
-    displayName: 'VS Build & Package restore'
+    displayName: 'VS Build'
     inputs:
       solution: '$(solution)'
       msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
@@ -112,7 +112,7 @@ jobs:
     condition: and(succeeded(), eq(variables.imageSize, 0))
 
 - job: 'Publish'
-  displayName: 'Publish .iso Artifacts'
+  displayName: 'Publish'
   dependsOn: 'ConsistancyCheck'
   steps:
   - task: PublishBuildArtifacts@1 # recommendded for faster performance
