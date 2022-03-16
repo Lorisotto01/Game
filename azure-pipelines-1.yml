@@ -102,7 +102,8 @@ jobs:
 
 
   - bash: |
-      if [ grep "Failed" assetsCheck.txt ]; then
+      fail=$(grep "Failed" assetsCheck.txt)
+      if [[ fail == 1 ]]; then
         mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
       fi
     displayName: 'send mail with assets check results'
@@ -110,7 +111,7 @@ jobs:
   #set size flag for the full source code
   - bash: |
       imagesize=$(du -c | tail -1 | awk '{x = $1 / 1024; if (x > $(DVDsize)) {print -1} else {print 0}}')
-      echo "##vso[task.setvariable variable=artifactSize]$imagesize"
+      echo "##vso[task.setvariable variable=imageSize]$imagesize"
     displayName: 'iso source files size check'
   #iso creation with condition
   # - bash: |
