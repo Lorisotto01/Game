@@ -133,12 +133,12 @@ jobs:
 
   - task: ArchiveFiles@2.
     displayName: 'Zip Artifact for Steam'
-      inputs:
-        rootFolderOrFile: '$(Build.BinariesDirectory)'
-        includeRootFolder: true
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        replaceExistingArchive: true
+    inputs:
+      rootFolderOrFile: '$(Build.BinariesDirectory)'
+      includeRootFolder: true
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      replaceExistingArchive: true
 
   - bash:
       zipSize=$(du -sh $(Build.ArtifactStagingDirectory)/*.zip | awk '{print $1}')
