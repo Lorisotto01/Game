@@ -4,7 +4,7 @@ parameters:
   targetCount: 2
 
 steps:
-- bash: 'actualCount=$(ls ${{ assetsDirectory }}/*.${{ fileExtension }} | wc -l)'
+- bash: 'actualCount=$(ls ${{ parameters.assetsDirectory }}/*.${{ fileExtension }} | wc -l)'
   # displayName: '${{fileExtension}} assets count'
 - bash: echo "Asset   result" >> assetsCheck.txt
 - bash: |
