@@ -15,7 +15,11 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   artifactName: 'Simple3D'
+  assets: 'Assets'
+  jsonData: 'JSON'
   artifactSize: 4780
+  videoRes: '3840x2160'
+
   # extensions:
   #   - {name: "wav", count: 2}
   #   - {name: "dds", count: 5}
@@ -27,13 +31,26 @@ pool:
   - msbuild
   - visualstudio
   # - oscdimg
+# https://answers.microsoft.com/en-us/windows/forum/all/where-is-oscdimgexe/b6ccd22e-b478-4222-b370-d5aaf021f575
+# https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/oscdimg-command-line-options?view=windows-11
   # - DirectX
+# https://docs.microsoft.com/en-us/windows/win32/dxtecharts/directx-setup-for-game-developers
 
 jobs:
 - job: 'BuildAndTest' #Job name cannot have spaces
   displayName: 'Build and Test'
   steps:
-  - script: #scarica e instala directX
+  - task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+  - script: dotnet add package Microsoft.DXSDK.D3DX --version 9.29.952.8
+    displayName: 'get directX'
+  - script: dotnet add package DiscUtils.Iso9660 --version 0.16.13
+    displayName: 'get iso creator'
+
   - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
     displayName: 'VS Build & Package restore'
     inputs:
@@ -64,11 +81,26 @@ jobs:
       fileExtention: 'dds'
       count: 5
 
+  - template: templates/assetsControl.yml
+    parameters:
+      fileExtention: 'mp4'
+      count: 1
+
   - bash: |
-      if grep "Failed" assetsCheck.txt
+      videoRes=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $(Build.SourcesDirectory)/$(Assets)/*)
+      if ($videoRes != $VIDEORES); then
+        echo "mp4Res    Failed" >> assetCheck.txt
+      else
+        echo "mp4Res    Succeded" >> assetCheck.txt
+      fi
+    displayName: 'trailer resolution check'
+
+
+  - bash: |
+      if (grep "Failed" assetsCheck.txt ||
       then mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
       fi
-    displayName: 'send mail with assets check result'
+    displayName: 'send mail with assets check results'
 
   #set size flag for the full source code
   - bash: |
@@ -85,7 +117,7 @@ jobs:
     condition: and(succeeded(), eq(variables.imageSize, 0))
 
 - job: 'Publish'
-  displayName: 'Publish Artifacts'
+  displayName: 'Publish .iso Artifacts'
   dependsOn: 'ConsistancyCheck'
   steps:
   - task: PublishBuildArtifacts@1 # recommendded for faster performance
@@ -96,19 +128,46 @@ jobs:
 #https://medium.com/@douglaslassance/automating-unreal-engine-project-builds-for-steam-using-github-4f164c803df0
 
   # - bash: |
-  #     imagesize=$(du $(Build.ArtifactStagingDirectory)/$(artifactName).zip| awk '{print $1}')
+  #     imagesize=$(du $(Build.ArtifactStagingDirectory)/$(artifactName).zip | awk '{print $1}')
   #     echo "##vso[task.setvariable variable=artifactSize]$imagesize"
 
-  # - task: SteamPublish@3
-  #   displayName: 'Publish Steam'
-  #   name: "Simple3DGameDX"
-  #     appid: 202930
-  #     disk_size_mb: '$(artifactSize)'
-  #   targetFolder: '$(Build.ArtifactStagingDirectory)/$(artifactName).zip'
-  #   inputs:
-  #     username: $USER
-  #     password: $PASS
-  #     description: '**/description.json'
+  - task: ArchiveFiles@2.
+    displayName: 'Zip Artifact for Steam'
+      inputs:
+        rootFolderOrFile: '$(Build.BinariesDirectory)'
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+
+  - bash:
+      zipSize=$(du -sh $(Build.ArtifactStagingDirectory)/*.zip | awk '{print $1}')
+
+  - task: SteamPublish@3
+    displayName: 'Steam Publish'
+      name: "Simple3DGameDX"
+        appid: 202930
+        disk_size_mb: '$(zipSize)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
+      inputs:
+        username: $USER
+        password: $PASS
+        description: '$(jsonData)/description.json'
+    # group: 1
+
+  # https://stackoverflow.com/questions/684015/how-can-i-get-the-resolution-width-and-height-for-a-video-file-from-a-linux-co
+
+  - task: PublishVideo@2
+    displayName: 'Realesing video in 4K'
+    videos:
+      title: 'Best Game of the Year'
+      file:  $(assets)/Trailer.mp4
+      description: $(jsonData)/description.json
+      category: Music
+      privacy: private
+    secrets_path: $(jsonData)/client_secrets.json
+    credentials_path:  $(jsonData)/credentials.json
+    condition: and(succeeded(), eq($(videoRes),  3840x2160)) # controllo per vedere se la risoluzione Ã¨ quella desiderata
 
 
 
