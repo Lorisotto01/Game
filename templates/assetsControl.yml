@@ -9,9 +9,9 @@ steps:
     actualCount=$(ls ${{ parameters.assetsDirectory }}/*.${{ parameters.fileExtension }} | wc -l)
     echo "##vso[task.setvariable variable=actualCount]$actualCount"
   displayName: '${{ parameters.fileExtension }} count'
+
 - bash: |
-    echo "Asset   result" >> assetsCheck.txt
-    if test ${{ parameters.actualCount }} eq ${{ parameters.targetCount }}; then
+    if [ ${{ parameters.actualCount }} == ${{ parameters.targetCount }} ]; then
       echo ${{ parameters.fileExtention }} "    Succeded" >> assetsCheck.txt
     else
       echo ${{ parameters.fileExtention }} "    Failed" >> assetsCheck.txt
