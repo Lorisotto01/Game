@@ -82,7 +82,7 @@ jobs:
       count: 1
 
   - bash: |
-      MediaInfo::Open("Assets/Cheesy.mp4")
+      MediaInfo::Open(Assets/Cheesy.mp4)
       MediaInfo::Get("**StreamKind**, **StreamNumber**, **Parameter**, **InfoKind**")
 
   - bash: |
