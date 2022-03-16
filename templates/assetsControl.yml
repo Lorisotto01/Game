@@ -2,6 +2,7 @@ parameters:
   assetsDirectory: 'Assets'
   fileExtension: 'wav'
   targetCount: 2
+variables:
   actualCount: 0
 
 steps:
@@ -11,7 +12,7 @@ steps:
   displayName: '${{parameters.fileExtension}} assets count'
 - bash: echo "Asset   result" >> assetsCheck.txt
 - bash: |
-    if eq(${{ parameters.actualCount }}, ${{ parameters.targetCount }}); then
+    if eq(${{ variable.actualCount }}, ${{ parameters.targetCount }}); then
       echo ${{ parameters.fileExtention }} "    Succeded" >> assetsCheck.txt
     else
       echo ${{ parameters.fileExtention }} "    Failed" >> assetsCheck.txt
