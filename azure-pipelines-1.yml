@@ -131,14 +131,14 @@ jobs:
   #     imagesize=$(du $(Build.ArtifactStagingDirectory)/$(artifactName).zip | awk '{print $1}')
   #     echo "##vso[task.setvariable variable=artifactSize]$imagesize"
 
-  - task: ArchiveFiles@2.
-    displayName: 'Zip Artifact for Steam'
-    inputs:
-      rootFolderOrFile: '$(Build.BinariesDirectory)'
-      includeRootFolder: true
-      archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-      replaceExistingArchive: true
+          # - task: ArchiveFiles@2.
+          #   displayName: 'Zip Artifact for Steam'
+          #   inputs:
+          #     rootFolderOrFile: '$(Build.BinariesDirectory)'
+          #     includeRootFolder: true
+          #     archiveType: 'zip'
+          #     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          #     replaceExistingArchive: true
 
   - bash:
       zipSize=$(du -sh $(Build.ArtifactStagingDirectory)/*.zip | awk '{print $1}')
