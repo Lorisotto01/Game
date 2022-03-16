@@ -41,10 +41,10 @@ jobs:
   displayName: 'Build and Test'
   steps:
   - task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
+    inputs:
+      command: 'restore'
+      restoreSolution: '**/*.sln'
+      feedsToUse: 'select'
 
   - bash: dotnet add package Microsoft.DXSDK.D3DX --version 9.29.952.8
     displayName: 'get directX'
