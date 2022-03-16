@@ -143,31 +143,31 @@ jobs:
   - bash:
       zipSize=$(du -sh $(Build.ArtifactStagingDirectory)/*.zip | awk '{print $1}')
 
-  - task: SteamPublish@3
-    displayName: 'Steam Publish'
-    name: "Simple3DGameDX"
-    appid: 202930
-    disk_size_mb: '$(zipSize)'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
-    inputs:
-      username: $USER
-      password: $PASS
-      description: '$(jsonData)/description.json'
+          # - task: SteamPublish@3
+          #   displayName: 'Steam Publish'
+          #   name: "Simple3DGameDX"
+          #     appid: 202930
+          #     disk_size_mb: '$(zipSize)'
+          #   targetFolder: '$(Build.ArtifactStagingDirectory)/*.zip'
+          #   inputs:
+          #     username: $USER
+          #     password: $PASS
+          #     description: '$(jsonData)/description.json'
     # group: 1
 
   # https://stackoverflow.com/questions/684015/how-can-i-get-the-resolution-width-and-height-for-a-video-file-from-a-linux-co
 
-  - task: PublishVideo@2
-    displayName: 'Realesing video in 4K'
-    videos:
-      title: 'Best Game of the Year'
-      file:  $(assets)/Trailer.mp4
-      description: $(jsonData)/description.json
-      category: Music
-      privacy: private
-    secrets_path: $(jsonData)/client_secrets.json
-    credentials_path:  $(jsonData)/credentials.json
-    condition: and(succeeded(), eq($(videoRes),  3840x2160)) # controllo per vedere se la risoluzione Ã¨ quella desiderata
+          # - task: PublishVideo@2
+          #   displayName: 'Realesing video in 4K'
+          #   videos:
+          #     title: 'Best Game of the Year'
+          #     file:  $(assets)/Trailer.mp4
+          #     description: $(jsonData)/description.json
+          #     category: Music
+          #     privacy: private
+          #   secrets_path: $(jsonData)/client_secrets.json
+          #   credentials_path:  $(jsonData)/credentials.json
+          #   condition: and(succeeded(), eq($(videoRes),  3840x2160)) # controllo per vedere se la risoluzione Ã¨ quella desiderata
 
 
 
