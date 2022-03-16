@@ -2,10 +2,10 @@ parameters:
   assetsDirectory: 'Assets'
   fileExtension: 'wav'
   targetCount: 2
-variables:
-  actualCount: 0
 
 steps:
+  variables:
+    actualCount: 0
 - bash: |
     actualCount=$(ls ${{ parameters.assetsDirectory }}/*.${{ parameters.fileExtension }} | wc -l)
     echo "##vso[task.setvariable variable=actualCount]$actualCount"
