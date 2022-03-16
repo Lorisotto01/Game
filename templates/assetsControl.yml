@@ -15,5 +15,6 @@ steps:
       echo ${{ parameters.fileExtention }} "    Succeded" >> assetsCheck.txt
     else
       echo ${{ parameters.fileExtention }} "    Failed" >> assetsCheck.txt
+    fi
   displayName: 'Compare and write result'
 
