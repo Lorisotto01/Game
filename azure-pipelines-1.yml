@@ -83,7 +83,7 @@ jobs:
 
   - bash: |
       videoRes=$(mediainfo --Inform="Video;%DisplayAspectRatio%" Assets/Cheesy.mp4)
-      if ($videoRes != $VIDEORES); then
+      if [ $videoRes != $VIDEORES ]; then
         echo "mp4Res    Failed" >> assetCheck.txt
       else
         echo "mp4Res    Succeded" >> assetCheck.txt
