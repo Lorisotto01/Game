@@ -9,10 +9,8 @@ trigger:
 # name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
 
 variables:
-# script to export all variables to the shell env
-# . <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' app.yaml)
   AgentImage: "windows-latest"
-  # system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
+  system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
@@ -21,9 +19,15 @@ variables:
   # extensions:
   #   - {name: "wav", count: 2}
   #   - {name: "dds", count: 5}
+  #   - {name: "mpeg", count: 3}
 
 pool:
   vmImage: $(AgentImage)
+  demands:
+  - msbuild
+  - visualstudio
+  - oscdimg
+  - DirectX
 
 jobs:
 - job: 'BuildAndTest' #Job name cannot have spaces
