@@ -99,7 +99,7 @@ jobs:
   - bash: |
       fail=$(grep "Failed" assetsCheck.txt)
       if [[ fail == 1 ]]; then
-        mail -s "Assets check result" amico@libero.it <<< assetCheck.txt
+        mail -s "Assets check result" casandra.cubreacov@gmail.com <<< assetCheck.txt
       fi
     displayName: 'send mail with assets check results'
 
@@ -108,6 +108,8 @@ jobs:
       imagesize=$(du -c | tail -1 | awk '{x = $1 / 1024; if (x > $(DVDsize)) {print -1} else {print 0}}')
       echo "##vso[task.setvariable variable=imageSize]$imagesize"
     displayName: 'iso source files size check'
+    condition: and(succeeded(), eq(variables.imageSize, 0))
+
   #iso creation with condition
   # - bash: |
       # mkisofs -o $(Build.SourcesDirectory)/$(artifactName).iso -J -R -l $(Build.SourcesDirectory)
