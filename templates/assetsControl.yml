@@ -8,7 +8,7 @@ steps:
 - bash: |
     actualCount=$(ls ${{ parameters.assetsDirectory }}/*.${{ [ parameters.fileExtension ] }} | wc -l)
     echo "##vso[task.setvariable variable=actualCount]$actualCount"
-  displayName: '${{ [ parameters.fileExtension ] }} count'
+  displayName: '${{ [ fileExtension ] }} count'
 
 - bash: |
     if [[ ${{ [ parameters.actualCount ] }} == ${{ parameters.targetCount }} ]]; then
