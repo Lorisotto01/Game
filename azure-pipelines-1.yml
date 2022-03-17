@@ -65,7 +65,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: Game
+      artifactName: $(artifactName)
 
 - job: 'ConsistancyCheck'
   displayName: 'Consistancy Check'
