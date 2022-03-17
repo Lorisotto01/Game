@@ -41,6 +41,7 @@ jobs:
 - job: 'Build'
   displayName: 'Build'
   steps:
+  - task: NuGetToolInstaller@0
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
@@ -56,7 +57,9 @@ jobs:
       configuration: '$(buildConfiguration)'
 
   - task: CopyFiles@2
+    displayName: 'Copy files to: $(Build.ArtifactStagingDirectory)'
     inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
       contents: '_buildOutput/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
