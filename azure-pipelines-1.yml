@@ -9,7 +9,7 @@ trigger:
 # name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
 
 variables:
-  AgentImage: "windows-latest"
+  AgentImage: "windows-2022"
   # system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
@@ -38,7 +38,7 @@ pool:
 # https://docs.microsoft.com/en-us/windows/win32/dxtecharts/directx-setup-for-game-developers
 
 jobs:
-- job: 'Build' #Job name cannot have spaces
+- job: 'Build'
   displayName: 'Build'
   steps:
   - task: NuGetCommand@2
@@ -47,13 +47,22 @@ jobs:
       restoreSolution: '$(solution)'
       feedsToUse: 'select'
 
-  - task: VSBuild@1 #as well automatically restores packages (alternative to nuget/dotnet restore)
+  - task: VSBuild@1
     displayName: 'VS Build'
     inputs:
       solution: '$(solution)'
       msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
+
+  - task: CopyFiles@2
+    inputs:
+      contents: '_buildOutput/**'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: Game
 
 - job: 'ConsistancyCheck'
   displayName: 'Consistancy Check'
@@ -84,7 +93,7 @@ jobs:
       else
         echo "mp4Res    Succeded" >> assetCheck.txt
       fi
-    displayName: 'media info resolution'
+    displayName: 'mediaInfo resolution check'
 
   - bash: |
       videoRes=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $(Build.SourcesDirectory)/$(Assets)/*)
@@ -114,10 +123,9 @@ jobs:
   # - bash: |
       # mkisofs -o $(Build.SourcesDirectory)/$(artifactName).iso -J -R -l $(Build.SourcesDirectory)
   - bash: |
-      curl.exe -o oscdimg.zip http://www.sevenforums.com/attachments/general-discussion/32382d1256189124-make-bootable-iso-student-d-l-oscdimg.zip
-      OSCDIMG.exe -dn $(Build.SourcesDirectory) $(artifactName)
+      oscdimg -dn $(Build.SourcesDirectory) $(artifactName)
     displayName: 'iso creation'
-    condition: and(succeeded(), eq(variables.imageSize, 0))
+    # condition: and(succeeded(), eq(variables.imageSize, 0))
 
 - job: 'Publish'
   displayName: 'Publish'
