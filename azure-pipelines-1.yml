@@ -10,7 +10,7 @@ trigger:
 
 variables:
   AgentImage: "windows-2022"
-  # system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
+  system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
