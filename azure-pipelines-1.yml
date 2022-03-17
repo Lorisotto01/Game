@@ -60,7 +60,7 @@ jobs:
     displayName: 'Copy files to: $(Build.ArtifactStagingDirectory)'
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
-      contents: '_buildOutput/**'
+      contents: '**/*'
       targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
     inputs:
