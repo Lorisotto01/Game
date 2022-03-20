@@ -1,0 +1,27 @@
+parameters:
+  directory: 'Assets'
+  job: 'count'
+  content: ''
+  targetValue: ''
+  presentValue: ''
+
+steps:
+- ${{ if eq($(job), 'count') }}:
+  - powershell: presentValue=(ls $(parameters.directory)/*.$(parameters.content) }} | wc -l)
+- ${{ else if eq($(job), 'size') }}:
+  - powershell: presentValue=$(du -cm $(parameters.directory)$(content) | tail -1 | awk '{print $1}')
+- ${{ else if eq($(job), 'quality') }}:
+  - powershell: videoRes=$(mediainfo --Inform="Video;%DisplayResolution%" Assets/Cheesy.mp4)
+- ${{ else }}:
+  - powershell: error
+  displayName: 'Get $(job)'
+
+- powershell:
+      Write-Host "##vso[task.setvariable variable=presentValue]$presentValue"
+      Write-Host "$(parameters.content)\n" >> assetsCheck.txt
+
+- ${{ if eq($(parameters.presentValue), $(parameters.target) }}:
+  - powershell: Write-Host "${{job}}    Succeded" >> assetsCheck.txt
+- ${{ else }}:
+  - powershell: Write-Host "${{job}}    Failed" >> assetsCheck.txt
+  displayName: 'Write result'
