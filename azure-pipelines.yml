@@ -70,12 +70,12 @@ jobs:
 
   steps:
   - ${{ each pair in parameters.assets }}:
-    - template: templates/basicChecks.yml
-      parameters:
-        job: 'count'
-        content: ${{ pair.key }}
-        targetValue: ${{ pair.value }}
-    displayName: 'check ${{ pair.key }} ${{ name }}'
+  - template: templates/basicChecks.yml
+    parameters:
+      job: 'count'
+      content: ${{ pair.key }}
+      targetValue: ${{ pair.value }}
+  displayName: 'check ${{ pair.key }} ${{ name }}'
 
   - template: templates/basicChecks.yml
     parameters:
