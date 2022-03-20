@@ -70,7 +70,7 @@ jobs:
 
   steps:
   - ${{ each pair in parameters.assets }}:
-  - template: templates/basicChecks.yml
+    - template: templates/basicChecks.yml
     parameters:
       job: 'count'
       content: ${{ pair.key }}
