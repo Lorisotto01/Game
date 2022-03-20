@@ -52,15 +52,15 @@ jobs:
 - job: 'Build'
   displayName: 'Build'
   dependsOn: 'PreBuild'
-
-- task: VSBuild@1
-  displayName: 'VS Build'
-  inputs:
-    vsversion: 17.0
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\$(artifactName).zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  steps:
+  - task: VSBuild@1
+    displayName: 'VS Build'
+    inputs:
+      vsversion: 17.0
+      solution: '$(solution)'
+      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\$(artifactName).zip" /p:DeployIisAppPath="Default Web Site"'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
 - job: 'ConsistancyCheck'
   displayName: 'Consistancy Check'
@@ -75,16 +75,14 @@ jobs:
         job: 'count'
         content: ${{ pair.key }}
         targetValue: ${{ pair.value }}
-      displayName: 'check ${{ pair.key }} ${{ name }}'
-      groupID: 1
+        displayName: 'check ${{ pair.key }} ${{ name }}'
 
   - template: templates/basicChecks.yml
     parameters:
       job: 'quality'
       content: '$(assets)trailer.mp4'
       targetValue: ${{videoRes}}
-    displayName: 'check video ${{ name }}'
-    groupID: 1
+      displayName: 'check video ${{ name }}'
 
   - task: ArchiveFiles@2
     inputs:
@@ -93,21 +91,19 @@ jobs:
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(artifactName).zip'
       replaceExistingArchive: true
     displayName: '.zip creation'
-    groupID: 2
 
   - powershell: oscdimg -dn $(Build.SourcesDirectory) $(Build.ArtifactStagingDirectory)/$(artifactName).iso
     displayName: 'iso creation'
-    groupID: 2
 
   - ${{ each pair in variables.artifacts }}:
-    - template: templates/basicChecks.yml
-      parameters:
-        job: 'size'
-        directory: '$(Build.ArtifactStagingDirectory)/$(artifactName).'
-        content: ${{ pair.key }}
-        targetValue: ${{ pair.value }}
+  - template: templates/basicChecks.yml
+    parameters:
+      job: 'size'
+      directory: '$(Build.ArtifactStagingDirectory)/$(artifactName).'
+      content: ${{ pair.key }}
+      targetValue: ${{ pair.value }}
       displayName: 'check ${{ pair.key }} ${{ name }}'
-      groupID: 3
+
 
   - powershell: |
       fail=$(grep "Failed" assetsCheck.txt)
