@@ -75,7 +75,7 @@ jobs:
       job: 'count'
       content: ${{ pair.key }}
       targetValue: ${{ pair.value }}
-  displayName: 'check ${{ pair.key }} ${{ name }}'
+      displayName: 'check ${{ pair.key }} ${{ name }}'
 
   - template: templates/basicChecks.yml
     parameters:
