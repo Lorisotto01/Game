@@ -69,7 +69,7 @@ jobs:
     - Build
 
   steps:
-  - ${{ each pair in parameters.assets }}:
+  #- ${{ each pair in parameters.assets }}:
 
   - template: templates/basicChecks.yml
     parameters:
