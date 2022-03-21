@@ -81,11 +81,11 @@ jobs:
       # displayName: 'check ${{ pair.key }} ${{ parameters.assets.name }}'
       # executionGroup: 1
 
-  - template: templates/basicChecks.yml
-    parameters:
-      job: 'quality'
-      content: '$(assets)Cheesy.mp4'
-      targetValue: $(videoRes)
+  #- template: templates/basicChecks.yml
+  #  parameters:
+  #    job: 'quality'
+  #    content: '$(assets)Cheesy.mp4'
+  #    targetValue: $(videoRes)
     # displayName: 'check video ${{ name }}'
     # executionGroup: 1
 
